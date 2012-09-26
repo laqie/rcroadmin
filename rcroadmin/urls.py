@@ -1,4 +1,5 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
+from django.views.generic import TemplateView
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -6,7 +7,7 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'rcroadmin.views.home', name='home'),
+    url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
     # url(r'^rcroadmin/', include('rcroadmin.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
@@ -15,3 +16,12 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
 )
+
+from django.conf import settings
+if settings.DEBUG:
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+    urlpatterns += staticfiles_urlpatterns()
+    urlpatterns += patterns('django.views', (r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:],
+                                             'static.serve',
+                                             {'document_root': settings.MEDIA_ROOT}))

@@ -1,0 +1,18 @@
+{% extends '_base.html' %}
+
+{% block main %}
+    <div class="container">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <a class="brand" href="{% url index %}">ОГБУ«РЦРО»</a>
+                <ul class="nav">
+                    <li class="active"><a href="#">Пользователи почты</a></li>
+                    <li><a href="#">Пользователи домена</a></li>
+                    <li><a href="#">Группы домена</a></li>
+                </ul>
+            </div>
+        </div>
+        {% block content %}
+        {% endblock %}
+    </div>
+{% endblock %}
