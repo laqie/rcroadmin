@@ -1,0 +1,135 @@
+{% extends '_base.html' %}
+{% load mailusers_tags %}
+{% block title %}Пользователи почты{% endblock %}
+{% block js %}
+    <script src="/media/js/jquery.uitablefilter.js"></script>
+    <script src="/media/js/musers.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            var user_on = '<span class="label status label-success">ON</span>';
+            var user_off = '<span class="label status label-important">OFF</span>';
+            $('#users_table').find('td.status').each(function () {
+                if ($(this).html() === '1') {
+                    $(this).html(user_on)
+                } else {
+                    $(this).html(user_off)
+                }
+            });
+
+
+            $("#quickfind").keyup(function (event) {
+                if (event.keyCode === 27) {
+                    this.value = '';
+                }
+                $.uiTableFilter($('#users_table'), this.value);
+            });
+
+
+            $('span.status').click(function (event) {
+                event.preventDefault();
+                var username = $(this).parents('tr').find('td.login a').html();
+                var active = ($(this).html() === 'ON') ? 0 : 1;
+                var label = $(this);
+                console.log(username);
+                ajax_request(
+                        '{% url mailusers_modify_user %}',
+                        {
+                            username:username,
+                            active:active
+                        },
+                        '{{ csrf_token }}',
+                        function (data) {
+                            $('#alert-area').html(data.alert).find('.alert').alert().fadeIn().delay(5000).fadeOut();
+                            if (label.html() === 'ON') {
+                                label.removeClass('label-success').addClass('label-important').html('OFF')
+                            } else {
+                                label.addClass('label-success').removeClass('label-important').html('ON')
+                            }
+                        }
+                );
+
+            });
+
+            $('a.show-password').click(function (event) {
+                event.preventDefault();
+                if ($(this).html() === showText) {
+                    var username = $(this).parents('tr').find('td.login a').html();
+                    var password_field = $(this).nextAll('.password');
+                    ajax_request(
+                            '{% url mailusers_get_password %}',
+                            {
+                                username:username
+                            },
+                            '{{ csrf_token }}',
+                            function (data) {
+                                password_field.html('<code>' + data.password + '</code>');
+                            }
+                    );
+                    $(this).html(hideText);
+                } else {
+                    $(this).html(showText);
+                    $(this).nextAll('.password').html('<code>••••••••</code>');
+                }
+            });
+
+
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="page-header span12">
+            <h1>Пользователи почты:</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <a class="btn btn-info" href="#">Добавить нового</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="alert-area" class="span12"></div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <label class="quickfind control-label" for="quickfind"></label>
+            <input class="span7" type="text" placeholder="Фильтр" id="quickfind"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <table class="table table-striped table-hover" id="users_table">
+                <thead>
+                <tr>
+                    <th>Статус</th>
+                    <th>Логин</th>
+                    <th>Пароль</th>
+                    <th>E-mail</th>
+                    <th>Квота</th>
+                    <th>Ящик</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for mailuser in mailusers %}
+                    <tr>
+                        <td class="status">{{ mailuser.active }}</td>
+                        <td class='login'><a href="#">{{ mailuser.username }}</a></td>
+                        <td class='password'>
+                            <a class="show-password" href="#">Показать</a>
+                            <div class="password"><code>••••••••</code></div>
+                        </td>
+                        <td>{% for email in mailuser.email %}<p><code>{{ email }}</code></p>{% endfor %}</td>
+                        <td><p><code>{{ mailuser.quota|size }}</code></p></td>
+                        <td><p><code>{{ mailuser.mailbox }}</code></p></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

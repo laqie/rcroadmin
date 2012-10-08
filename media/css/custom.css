@@ -1,0 +1,17 @@
+td.status {
+    text-align: center;
+}
+
+code {
+    color: #333;
+}
+
+tr.selected td,
+tr.selected:nth-child(odd) td,
+.table-striped tbody tr.selected:nth-child(odd) td {
+    background: #e6eff5;
+}
+
+.table tbody tr.selected:hover td {
+    background-color: #d7ecf5;
+}
