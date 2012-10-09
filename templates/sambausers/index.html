@@ -1,0 +1,169 @@
+{% extends '_base.html' %}
+{% load mailusers_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block js %}
+    <script src="/media/js/jquery.uitablefilter.js"></script>
+    <script src="/media/js/musers.js"></script>
+
+
+
+    <script type="text/javascript">
+        $(function () {
+
+            var sambausersModal = $('#sambausersModal');
+            var sambausersAlertArea = $('#alert-area');
+            var user_on = '<span class="label status label-success">ON</span>';
+            var user_off = '<span class="label status label-important">OFF</span>';
+
+            $('#users_table').find('td.status').each(function () {
+                if ($(this).html().indexOf('D') == -1) {
+                    $(this).html(user_on)
+                } else {
+                    $(this).html(user_off)
+                }
+            });
+
+            $("#quickfind").keyup(function (event) {
+                if (event.keyCode === 27) {
+                    this.value = '';
+                }
+                $.uiTableFilter($('#users_table'), this.value);
+            });
+
+            $('a.control-delete').click(function (event) {
+                event.preventDefault();
+                var row = $(this).parents('tr');
+                var username = row.find('td.login a').html();
+                sambausersModal.find('.modal-header h3').html('Удаление пользователя:');
+                sambausersModal.find('.modal-body p').html('Вы действительно хотите удалить ' +
+                                                                   'пользователя <code class="username">' + username + '</code>?');
+                sambausersModal.modal('show');
+                sambausersModal.find('a.btn-primary').html('Удалить').unbind('click').click(function () {
+                    console.log('User ' + username + ' was deleted!');
+                    row.remove();
+                    sambausersModal.modal('hide');
+                });
+            });
+
+            $('a.control-disable').click(function (event) {
+                event.preventDefault();
+                var row = $(this).parents('tr');
+                var username = row.find('td.login a').html();
+                sambausersModal.find('.modal-header h3').html('Отключение пользователя:');
+                sambausersModal.find('.modal-body p').html('Вы действительно хотите отключить ' +
+                                                                   'пользователя <code class="username">' + username + '</code>?');
+                sambausersModal.modal('show');
+                sambausersModal.find('a.btn-primary').html('Отключить').unbind('click').click(function () {
+                    console.log('User ' + username + ' was disabled!');
+                    sambausersModal.modal('hide');
+                });
+            });
+
+            $('a.control-password').click(function (event) {
+                event.preventDefault();
+                var row = $(this).parents('tr');
+                var username = row.find('td.login a').html();
+                sambausersModal.find('.modal-header h3').html('Изменение пароля:');
+                sambausersModal.find('.modal-body p').html('Введите новый пароль для пользователя  ' +
+                                                                   'пользователя <code class="username">' + username + '</code>:' +
+                                                                   '<br><br><input class="span5" type="text" placeholder="Минимуим 5 символов" id="newpassword"/>');
+                sambausersModal.modal('show');
+                sambausersModal.find('a.btn-primary').html('Изменить пароль').unbind('click').click(function () {
+                    var newpassword = $('#newpassword').val();
+                    console.log('New password for user ' + username + ' is ' + newpassword);
+                    sambausersModal.modal('hide');
+                    ajax_request(
+                            '{% url sambausers_change_password %}',
+                            {
+                                username:username,
+                                newpassword:newpassword
+                            },
+                            '{{ csrf_token }}',
+                            function (data) {
+                                var text = data.message;
+                                sambausersAlertArea.html('<div class="alert alert-block alert-warning hide fade in"><a class="close" data-dismiss="alert" href="#">&times;</a><p>' + text + '</p></div>');
+                                sambausersAlertArea.find('.alert').alert().fadeIn().delay(5000).fadeOut();
+                            }
+                    );
+                });
+            });
+
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="page-header span12">
+            <h1>{{ title }}</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="alert-area" class="span12">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <a class="btn btn-info" href="{% url sambauser_add %}">Добавить нового</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <label class="quickfind control-label" for="quickfind"></label>
+            <input class="span7" type="text" placeholder="Фильтр" id="quickfind"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <table class="table table-striped table-hover" id="users_table">
+                <thead>
+                <tr>
+                    <th>Статус</th>
+                    <th>Логин</th>
+                    <th>Имя</th>
+                    <th>Отдел</th>
+                    <th>Управление</th>
+                    <th>Телефон</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for sambauser in sambausers %}
+                    <tr>
+                        <td class="status">{{ sambauser.samba_acct_flags }}</td>
+                        <td class='login'><a
+                                href="{% url sambauser_edit sambauser.username %}">{{ sambauser.username }}</a></td>
+                        <td><strong>{{ sambauser.display_name }}</strong></td>
+                        <td><code>{{ sambauser.get_gecos_display|truncatechars:50 }}</code></td>
+                        <td>
+                            <div class="control">
+                                <a class="btn btn-small control-password" href="#">Сменить пароль</a>
+                                <a class="btn btn-small control-disable" href="#">Отключить</a>
+                                <a class="btn btn-small control-delete" href="#">Удалить</a>
+                            </div>
+                        </td>
+                        <td><p><code>{{ sambauser.phone }}</code></p></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal hide" id="sambausersModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3></h3>
+        </div>
+        <div class="modal-body">
+            <p></p>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn btn-primary">Удалить</a>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Отмена</button>
+        </div>
+    </div>
+{% endblock %}

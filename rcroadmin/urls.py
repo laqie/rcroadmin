@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
     url(r'^mailusers/', include('mailusers.urls')),
+    url(r'^sambausers/', include('sambausers.urls')),
     # url(r'^rcroadmin/', include('rcroadmin.foo.urls')),
 #    url(r'^mailusers/$', 'mailusers.views.index', name='mailusers_index'),
 

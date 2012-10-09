@@ -1,0 +1,21 @@
+{% extends '_base.html' %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+{% block js %}
+    <script type="text/javascript">
+        $(function () {
+            'use strict';
+            $('#id_username').keyup(populate).change(populate).focus(populate);
+            $('#id_last_name').keyup(set_slug).change(set_slug).focus(set_slug);
+        });
+    </script>
+{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="row form">
+        <div class="span8 offset2">
+            {% crispy form %}
+        </div>
+    </div>
+{% endblock %}

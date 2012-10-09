@@ -10,7 +10,7 @@ from mailusers.forms import MailUserForm
 
 
 
-@render_to('mailusers/edit.html')
+@render_to('mailusers/add.html')
 def edit(request, username=None):
     user = get_object_or_404(MailUser, username=username) if username else None
     if user:
@@ -22,6 +22,7 @@ def edit(request, username=None):
         form = MailUserForm(request.POST, instance=user)
         if form.is_valid():
             user = form.save()
+            title = u'Пользователь обновлен' if user else u'Пользователь добавлен'
             return dict(user=user, TEMPLATE='mailusers/edit_complete.html')
     else:
         form = MailUserForm(instance=user)
