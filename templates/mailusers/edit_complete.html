@@ -1,0 +1,23 @@
+{% extends '_base.html' %}
+{% block content %}
+    <script type="text/javascript">
+        $(function () {
+            setTimeout(function () {
+                //noinspection JSCheckFunctionSignatures
+                window.location.replace('{% url mailusers_index %}');
+            }, 5000)
+        })
+    </script>
+    <div class="row edit-complete">
+    <div class="span12">
+        <div class="hero-unit">
+            <h1>Пользователь сохранен</h1>
+            <p>{{ user.dn }}</p>
+            <p>
+                <a href="{% url mailusers_index %}" class="btn btn-primary btn-large">OK</a>
+            </p>
+        </div>
+    </div>
+    </div>
+
+{% endblock %}

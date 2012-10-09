@@ -1,13 +1,39 @@
 # coding=utf-8
 from annoying.decorators import render_to, ajax_request
-from mailusers.models import MailUser
+
 from django.utils import simplejson
 from django.http import Http404
+from django.shortcuts import get_object_or_404
+
+from mailusers.models import MailUser
+from mailusers.forms import MailUserForm
+
+
+
+@render_to('mailusers/edit.html')
+def edit(request, username=None):
+    user = get_object_or_404(MailUser, username=username) if username else None
+    if user:
+        title = u'Изменить пользователя "%s"' % user.dn
+    else:
+        title = u'Добавить нового пользователя почты'
+
+    if request.method == 'POST':
+        form = MailUserForm(request.POST, instance=user)
+        if form.is_valid():
+            user = form.save()
+            return dict(user=user, TEMPLATE='mailusers/edit_complete.html')
+    else:
+        form = MailUserForm(instance=user)
+
+
+    return dict(form=form, title=title)
 
 @render_to('mailusers/index.html')
 def index(request):
     mailusers = MailUser.objects.order_by('username')
-    return dict(mailusers=mailusers)
+    title = u'Пользователи почты'
+    return dict(mailusers=mailusers, title=title)
 
 
 @ajax_request
@@ -25,7 +51,6 @@ def get_user_password(request):
 def modify_user(request):
     if request.method == 'POST':
         data = simplejson.loads(request.POST.get('data', None))
-        print data
         active = data.get('active', 1)
         username = data.get('username', '')
         message = u'включен' if active else u'отключен'

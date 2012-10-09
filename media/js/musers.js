@@ -41,7 +41,7 @@ var populate = function () {
     var emails = '';
     var maildir = '';
     if (uid.length > 1) {
-        emails = uid + '@education.tomsk.ru\n' + uid + '@rcro.tomsk.ru';
+        emails = uid + '@education.tomsk.ru';// + uid + '@rcro.tomsk.ru';
         maildir = '/' + uid + '/Maildir/';
     }
     $('#id_email').val(emails);
@@ -49,7 +49,8 @@ var populate = function () {
 };
 
 var set_slug = function () {
-    $('#id_username').val(slugify($('#id_last_name').val(), 50));
+    var username_field = $('#id_username');
+    username_field.val(slugify($('#id_last_name').val(), 50));
     populate();
 };
 

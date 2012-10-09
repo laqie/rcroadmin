@@ -1,6 +1,6 @@
 {% extends '_base.html' %}
 {% load mailusers_tags %}
-{% block title %}Пользователи почты{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 {% block js %}
     <script src="/media/js/jquery.uitablefilter.js"></script>
     <script src="/media/js/musers.js"></script>
@@ -81,13 +81,13 @@
 {% block content %}
     <div class="row">
         <div class="page-header span12">
-            <h1>Пользователи почты:</h1>
+            <h1>{{ title }}</h1>
         </div>
     </div>
 
     <div class="row">
         <div class="span12">
-            <a class="btn btn-info" href="#">Добавить нового</a>
+            <a class="btn btn-info" href="{% url mailusers_add %}">Добавить нового</a>
         </div>
     </div>
 
@@ -118,7 +118,7 @@
                 {% for mailuser in mailusers %}
                     <tr>
                         <td class="status">{{ mailuser.active }}</td>
-                        <td class='login'><a href="#">{{ mailuser.username }}</a></td>
+                        <td class='login'><a href="{% url mailusers_edit mailuser.username %}">{{ mailuser.username }}</a></td>
                         <td class='password'>
                             <a class="show-password" href="#">Показать</a>
                             <div class="password"><code>••••••••</code></div>

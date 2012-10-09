@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}{{ title }}{% endblock %}
+{% block js %}
+    <script src="/media/js/urlify.js"></script>
+    <script src="/media/js/musers.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#id_username').keyup(populate).change(populate);
+            $('#id_last_name').keyup(set_slug).change(set_slug);
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    {% crispy form %}
+{% endblock %}
