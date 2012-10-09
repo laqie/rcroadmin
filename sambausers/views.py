@@ -113,6 +113,39 @@ def sambauser_add(request, username=None):
 
 
 @ajax_request
+def change_user_status(request):
+    if request.method == 'POST':
+        data = simplejson.loads(request.POST.get('data', None))
+        username = data.get('username', '')
+        if username:
+            user = SambaUser.objects.get(username=username)
+            if u'D' in user.samba_acct_flags:
+                user.samba_acct_flags = u'[UX]'
+                status = True
+                message = u'Пользователь <strong>%s</strong> был разблокирован' % username
+            else:
+                status = False
+                user.samba_acct_flags = u'[UXD]'
+                message = u'Пользователь <strong>%s</strong> был заблокирован' % username
+            user.save()
+            return {'message': message, 'status': status}
+    raise Http404
+
+
+@ajax_request
+def delete_user(request):
+    if request.method == 'POST':
+        data = simplejson.loads(request.POST.get('data', None))
+        username = data.get('username', '')
+        if username:
+            user = SambaUser.objects.get(username=username)
+            message = u'Пользователь <strong>%s</strong> был удален' % username
+#            user.delete()
+            return {'message': message}
+    raise Http404
+
+
+@ajax_request
 def change_user_password(request):
     if request.method == 'POST':
         data = simplejson.loads(request.POST.get('data', None))
@@ -126,8 +159,8 @@ def change_user_password(request):
                     user.save()
                     message = u"""Пароль пользователя <strong>%s</strong> изменен на <strong>%s</strong>""" % (username, password)
                 else:
-                    message = 'Пароль слишком короткий'
+                    message = u'Пароль слишком короткий'
             else:
-                message = 'Пароль не задан'
+                message = u'Пароль не задан'
             return {'message': message}
     raise Http404

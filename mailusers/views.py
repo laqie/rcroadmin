@@ -54,7 +54,7 @@ def modify_user(request):
         data = simplejson.loads(request.POST.get('data', None))
         active = data.get('active', 1)
         username = data.get('username', '')
-        message = u'включен' if active else u'отключен'
+        message = u'разблокирован' if active else u'заблокирован'
         html = u"""
             <div class="alert alert-block alert-warning hide fade in">
             <a class="close" data-dismiss="alert" href="#">&times;</a>

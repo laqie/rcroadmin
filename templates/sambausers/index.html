@@ -40,8 +40,20 @@
                 sambausersModal.modal('show');
                 sambausersModal.find('a.btn-primary').html('Удалить').unbind('click').click(function () {
                     console.log('User ' + username + ' was deleted!');
-                    row.remove();
+                    ajax_request(
+                            '{% url sambausers_delete_user %}',
+                            {
+                                username:username
+                            },
+                            '{{ csrf_token }}',
+                            function (data) {
+                                var text = data.message;
+                                sambausersAlertArea.html('<div class="alert alert-block alert-warning hide fade in"><a class="close" data-dismiss="alert" href="#">&times;</a><p>' + text + '</p></div>');
+                                sambausersAlertArea.find('.alert').alert().fadeIn().delay(5000).fadeOut();
+                            }
+                    );
                     sambausersModal.modal('hide');
+                    row.remove();
                 });
             });
 
@@ -54,7 +66,25 @@
                                                                    'пользователя <code class="username">' + username + '</code>?');
                 sambausersModal.modal('show');
                 sambausersModal.find('a.btn-primary').html('Отключить').unbind('click').click(function () {
-                    console.log('User ' + username + ' was disabled!');
+                    ajax_request(
+                            '{% url sambausers_change_status %}',
+                            {
+                                username:username
+                            },
+                            '{{ csrf_token }}',
+                            function (data) {
+                                var text = data.message;
+                                if (data.status) {
+                                    row.find('td.status').html(user_on);
+{#                                    row.find('a.control-disable').html('Отключить');#}
+                                } else {
+                                    row.find('td.status').html(user_off);
+{#                                    row.find('a.control-disable').html('Включить');#}
+                                }
+                                sambausersAlertArea.html('<div class="alert alert-block alert-warning hide fade in"><a class="close" data-dismiss="alert" href="#">&times;</a><p>' + text + '</p></div>');
+                                sambausersAlertArea.find('.alert').alert().fadeIn().delay(5000).fadeOut();
+                            }
+                    );
                     sambausersModal.modal('hide');
                 });
             });
@@ -71,7 +101,6 @@
                 sambausersModal.find('a.btn-primary').html('Изменить пароль').unbind('click').click(function () {
                     var newpassword = $('#newpassword').val();
                     console.log('New password for user ' + username + ' is ' + newpassword);
-                    sambausersModal.modal('hide');
                     ajax_request(
                             '{% url sambausers_change_password %}',
                             {
@@ -85,6 +114,7 @@
                                 sambausersAlertArea.find('.alert').alert().fadeIn().delay(5000).fadeOut();
                             }
                     );
+                    sambausersModal.modal('hide');
                 });
             });
 
@@ -141,7 +171,7 @@
                         <td>
                             <div class="control">
                                 <a class="btn btn-small control-password" href="#">Сменить пароль</a>
-                                <a class="btn btn-small control-disable" href="#">Отключить</a>
+                                <a class="btn btn-small control-disable" href="#">Сменить статус</a>
                                 <a class="btn btn-small control-delete" href="#">Удалить</a>
                             </div>
                         </td>
