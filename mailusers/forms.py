@@ -27,7 +27,7 @@ class ListField(CharField):
         for item in items:
             item = item.strip()
             if item:
-                validators.validate_email(item)
+#                validators.validate_email(item)
                 result.append(item)
         return result
 

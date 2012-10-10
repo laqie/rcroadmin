@@ -1,0 +1,68 @@
+{% extends '_base.html' %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(function () {
+            $("#quickfind").keyup(function (event) {
+                if (event.keyCode === 27) {
+                    this.value = '';
+                }
+                $.uiTableFilter($('#groups_table'), this.value);
+            });
+        })
+    </script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                <h1>{{ title }}:</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <div class="actions">
+                <p class="modify">
+                    <a class="btn btn-info" href="{% url sambausers_add_group %}">Добавить новую</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="alert-area" class="span12"></div>
+    </div>
+    <div class="row">
+        <div class="span12">
+            <label class="quickfind control-label" for="quickfind"></label>
+            <input class="span7" type="text" placeholder="Фильтр" id="quickfind"/>
+
+            <div id="sambausers_table">
+                <table class="table table-striped" id="groups_table">
+                    <thead>
+                    <tr>
+                        <th class="centered">Номер группы</th>
+                        <th>Название</th>
+                        <th>Описание</th>
+                        <th class="centered">Пользователей в группе</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for group in groups %}
+                        <tr>
+                            <td class="centered">{{ group.gid_number }}</td>
+                            <td><a href="{% url sambauser_edit_group group.gid_number %}"><strong>{{ group.cn }}</strong></a></td>
+                            <td>{{ group.description }}</td>
+                            <td class="centered">{{ group.members|length }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

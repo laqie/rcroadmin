@@ -1,8 +1,9 @@
 # coding=utf-8
 from annoying.decorators import render_to, ajax_request
-from sambausers.models import SambaGroup, SambaUser, create_or_change_user
+from sambausers.models import SambaGroup, SambaUser, create_or_change_user, get_domain_info
 from django.shortcuts import get_object_or_404
 from django.http import Http404
+
 
 from django.views.generic import ListView, FormView
 from django.utils import simplejson
@@ -10,41 +11,40 @@ from django.utils import simplejson
 from sambausers.forms import SambaUserForm, SambaGroupForm
 
 
-class SambaUsersView(ListView):
-    template_name = 'sambausers/index.html'
-    model = SambaUser
-    context_object_name = 'users'
 
-    def get_queryset(self):
-        return SambaUser.objects.exclude(username__in=['root', 'nobody']).all()
+@render_to('sambausers/group_add.html')
+def group_add(request, group_gid=None):
+    group = get_object_or_404(SambaGroup, gid_number=group_gid) if group_gid else None
+    title = u'Редактирование группы'
+    if request.method == 'POST':
+        form = SambaGroupForm(request.POST, instance=group)
+        if form.is_valid():
+            group = form.save(commit=False)
+            if not group_gid:
+                new_gid_number = SambaGroup.get_last_gid() + 1
+                _, domain_sid, _, _ = get_domain_info()
+                group.display_name = group.cn
+                group.samba_group_type = 2
+                group.gid_number = new_gid_number
+                group.samba_sid = u'%s-%i' % (domain_sid, new_gid_number)
+                group.save()
+            else:
+                group.display_name = group.cn
+                group.save()
+            title = u'Группа обновлена' if group_gid else u'Группа добавлена'
+            return dict(group=group, title=title, TEMPLATE='sambausers/group_edit_complete.html')
+    else:
+        form = SambaGroupForm(instance=group)
+
+    return dict(form=form, title=title)
 
 
-class AddSambaGroupView(FormView):
-    model = SambaGroup
-    form_class = SambaGroupForm
-    template_name = u'sambausers/group_add.html'
 
-
-    def get_form_kwargs(self):
-        kwargs = super(AddSambaGroupView, self).get_form_kwargs()
-        kwargs[u'group_gid'] = self.kwargs.get(u'group_gid', 0)
-        return kwargs
-
-
-    def get_context_data(self, **kwargs):
-        context = super(AddSambaGroupView, self).get_context_data(**kwargs)
-        context['title'] = u'Добавить новую группу'
-        return context
-
-
-class SambaGroupsViews(ListView):
-    template_name = 'sambausers/index_group.html'
-    model = SambaGroup
-    context_object_name = 'groups'
-
-    def get_queryset(self):
-        return SambaGroup.objects.exclude(gid_number__in=[513, 515]).all()
-
+@render_to('sambausers/group_index.html')
+def group_index(request):
+    groups = SambaGroup.objects.exclude(gid_number__in=[513, 515]).all()
+    title = u'Группы домена'
+    return dict(groups=groups, title=title)
 
 @render_to('sambausers/index.html')
 def index(request):
@@ -140,7 +140,7 @@ def delete_user(request):
         if username:
             user = SambaUser.objects.get(username=username)
             message = u'Пользователь <strong>%s</strong> был удален' % username
-#            user.delete()
+            user.delete()
             return {'message': message}
     raise Http404
 

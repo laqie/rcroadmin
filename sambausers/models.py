@@ -176,6 +176,11 @@ class SambaGroup(ldapdb.models.Model):
             return True
         return False
 
+
+    @classmethod
+    def get_last_gid(cls):
+        return cls.objects.order_by('-gid_number')[0].gid_number
+
     def __unicode__(self):
         return '%s: %s' % (self.gid_number, self.description)
 

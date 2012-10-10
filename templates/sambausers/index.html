@@ -61,8 +61,8 @@
                 event.preventDefault();
                 var row = $(this).parents('tr');
                 var username = row.find('td.login a').html();
-                sambausersModal.find('.modal-header h3').html('Отключение пользователя:');
-                sambausersModal.find('.modal-body p').html('Вы действительно хотите отключить ' +
+                sambausersModal.find('.modal-header h3').html('Смена статуса пользователя:');
+                sambausersModal.find('.modal-body p').html('Вы действительно хотите сменить статус ' +
                                                                    'пользователя <code class="username">' + username + '</code>?');
                 sambausersModal.modal('show');
                 sambausersModal.find('a.btn-primary').html('Отключить').unbind('click').click(function () {

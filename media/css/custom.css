@@ -2,7 +2,9 @@ td.status {
     text-align: center;
 }
 
-
+td.centered  {
+    text-align: center;
+}
 
 code {
     color: #333;

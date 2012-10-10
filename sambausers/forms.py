@@ -5,6 +5,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, HTML, Field, Fieldset
 from crispy_forms.bootstrap import FormActions
 
+from mailusers.forms import ListField
+
 DEPARTMENTS = (
     (u'OSP', u'Отдел сопровождения проектов'),
     (u'ORGOUO', u'Отдел развития государственно-общественного управления образованием'),
@@ -66,10 +68,10 @@ class SambaUserForm(forms.Form):
         )
 
 
-class SambaGroupForm(forms.Form):
-    cn = forms.CharField(label=u'Название')
-    description = forms.CharField(label=u'Описание')
-    members = forms.CharField(label=u'Члены группы')
+class SambaGroupForm(forms.ModelForm):
+    cn = forms.CharField(label=u'Название', help_text=u'Название')
+    description = forms.CharField(label=u'Описание', help_text=u'Описание')
+    members = ListField(label=u'Члены группы', help_text=u'Каждый логин пользователя на новой строке')
 
     def __init__(self, *args, **kwargs):
 #        print kwargs.pop('group_gid')
@@ -95,6 +97,15 @@ class SambaGroupForm(forms.Form):
             )
 
         )
-        #!EOF!
 
-  
+    class Meta:
+        model = SambaGroup
+        fields = (u'cn',
+                  u'description',
+                  u'members'
+            )
+        exclude = (u'dn', u'display_name',
+                   u'gid_number',
+                   u'samba_group_type',
+                   u'samba_sid',
+            )

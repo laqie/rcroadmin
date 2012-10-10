@@ -1,0 +1,26 @@
+{% extends '_base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+    <script type="text/javascript">
+        $(function () {
+            setTimeout(function () {
+                //noinspection JSCheckFunctionSignatures
+                window.location.replace('{% url sambausers_groups %}');
+            }, 5000)
+        })
+    </script>
+    <div class="row edit-complete">
+        <div class="span12">
+            <div class="hero-unit">
+                <h1>{{ title }}</h1>
+
+                <p>{{ group.dn }}</p>
+
+                <p>
+                    <a href="{% url sambausers_groups %}" class="btn btn-primary btn-large">OK</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
