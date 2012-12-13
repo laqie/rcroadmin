@@ -3,13 +3,13 @@ from annoying.decorators import render_to, ajax_request
 
 from django.utils import simplejson
 from django.http import Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 
+from django.contrib.auth.decorators import login_required
 from mailusers.models import MailUser
 from mailusers.forms import MailUserForm
 
-
-
+@login_required
 @render_to('mailusers/add.html')
 def edit(request, username=None):
     user = get_object_or_404(MailUser, username=username) if username else None
@@ -22,7 +22,6 @@ def edit(request, username=None):
         form = MailUserForm(request.POST, instance=user)
         if form.is_valid():
             user = form.save()
-            title = u'Пользователь обновлен' if user else u'Пользователь добавлен'
             return dict(user=user, TEMPLATE='mailusers/edit_complete.html')
     else:
         form = MailUserForm(instance=user)
@@ -36,7 +35,7 @@ def index(request):
     title = u'Пользователи почты'
     return dict(mailusers=mailusers, title=title)
 
-
+@login_required
 @ajax_request
 def get_user_password(request):
     if request.method == 'POST':
@@ -45,9 +44,10 @@ def get_user_password(request):
         if username:
             user = MailUser.objects.get(username=username)
             return {'password': user.password}
+
     raise Http404
 
-
+@login_required
 @ajax_request
 def modify_user(request):
     if request.method == 'POST':

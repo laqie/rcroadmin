@@ -6,7 +6,6 @@
     <script src="/media/js/musers.js"></script>
 
 
-
     <script type="text/javascript">
         $(function () {
 
@@ -36,7 +35,8 @@
                 var username = row.find('td.login a').html();
                 sambausersModal.find('.modal-header h3').html('Удаление пользователя:');
                 sambausersModal.find('.modal-body p').html('Вы действительно хотите удалить ' +
-                                                                   'пользователя <code class="username">' + username + '</code>?');
+                                                                   'пользователя <code class="username">' + username + '</code>?' +
+                                                                   '<br><strong>Эта операция необратима!</strong>');
                 sambausersModal.modal('show');
                 sambausersModal.find('a.btn-primary').html('Удалить').unbind('click').click(function () {
                     console.log('User ' + username + ' was deleted!');
@@ -65,7 +65,7 @@
                 sambausersModal.find('.modal-body p').html('Вы действительно хотите сменить статус ' +
                                                                    'пользователя <code class="username">' + username + '</code>?');
                 sambausersModal.modal('show');
-                sambausersModal.find('a.btn-primary').html('Отключить').unbind('click').click(function () {
+                sambausersModal.find('a.btn-primary').html('Сменить').unbind('click').click(function () {
                     ajax_request(
                             '{% url sambausers_change_status %}',
                             {
@@ -170,9 +170,9 @@
                         <td><code>{{ sambauser.get_gecos_display|truncatechars:50 }}</code></td>
                         <td>
                             <div class="control">
-                                <a class="btn btn-small control-password" href="#">Сменить пароль</a>
-                                <a class="btn btn-small control-disable" href="#">Сменить статус</a>
-                                <a class="btn btn-small control-delete" href="#">Удалить</a>
+                                <a class="btn btn-mini control-password" href="#">Сменить пароль</a>
+                                <a class="btn btn-mini control-disable" href="#">Сменить статус</a>
+                                <a class="btn btn-mini control-delete" href="#">Удалить</a>
                             </div>
                         </td>
                         <td><p><code>{{ sambauser.phone }}</code></p></td>

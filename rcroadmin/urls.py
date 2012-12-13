@@ -6,18 +6,14 @@ from django.views.generic import TemplateView
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
     url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
     url(r'^mailusers/', include('mailusers.urls')),
     url(r'^sambausers/', include('sambausers.urls')),
-    # url(r'^rcroadmin/', include('rcroadmin.foo.urls')),
-#    url(r'^mailusers/$', 'mailusers.views.index', name='mailusers_index'),
 
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^login/$', 'django.contrib.auth.views.login', {'template_name': 'login.html'}, name='login'),
+    url(r'^logout/$', 'django.contrib.auth.views.logout', name='logout'),
 
-    # Uncomment the next line to enable the admin:
-    #url(r'^admin/', include(admin.site.urls)),
+
 )
 
 from django.conf import settings

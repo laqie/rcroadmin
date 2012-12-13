@@ -64,9 +64,9 @@
                             '{{ csrf_token }}',
                             function (data) {
                                 password_field.html('<code>' + data.password + '</code>');
+                                $(this).html(hideText);
                             }
                     );
-                    $(this).html(hideText);
                 } else {
                     $(this).html(showText);
                     $(this).nextAll('.password').html('<code>••••••••</code>');

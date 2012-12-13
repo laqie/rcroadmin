@@ -25,7 +25,16 @@
                     <li><a href="{% url mailusers_index %}">Пользователи почты</a></li>
                     <li><a href="{% url sambausers_index %}">Пользователи домена</a></li>
                     <li><a href="{% url sambausers_groups %}">Группы домена</a></li>
+
                     {% endblock %}
+                </ul>
+
+                <ul class="nav pull-right">
+                    {% if user.is_authenticated %}
+                        <li><a href='/logout?next=/'>Выйти</a></li>
+                    {% else %}
+                        <li><a href='/login?next=/'>Войти</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

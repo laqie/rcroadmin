@@ -4,6 +4,8 @@ from sambausers.models import SambaGroup, SambaUser, create_or_change_user, get_
 from django.shortcuts import get_object_or_404
 from django.http import Http404
 
+from django.contrib.auth.decorators import login_required
+
 
 from django.views.generic import ListView, FormView
 from django.utils import simplejson
@@ -11,7 +13,7 @@ from django.utils import simplejson
 from sambausers.forms import SambaUserForm, SambaGroupForm
 
 
-
+@login_required
 @render_to('sambausers/group_add.html')
 def group_add(request, group_gid=None):
     group = get_object_or_404(SambaGroup, gid_number=group_gid) if group_gid else None
@@ -46,13 +48,15 @@ def group_index(request):
     title = u'Группы домена'
     return dict(groups=groups, title=title)
 
+
+
 @render_to('sambausers/index.html')
 def index(request):
     sambausers = SambaUser.objects.exclude(username='root').exclude(username='nobody').all()
     title = u'Пользователи домена'
     return dict(sambausers=sambausers, title=title)
 
-
+@login_required
 @render_to('sambausers/add.html')
 def sambauser_add(request, username=None):
     if username:
@@ -112,6 +116,7 @@ def sambauser_add(request, username=None):
     return dict(form=form, title=title)
 
 
+@login_required
 @ajax_request
 def change_user_status(request):
     if request.method == 'POST':
@@ -131,7 +136,7 @@ def change_user_status(request):
             return {'message': message, 'status': status}
     raise Http404
 
-
+@login_required
 @ajax_request
 def delete_user(request):
     if request.method == 'POST':
@@ -144,7 +149,7 @@ def delete_user(request):
             return {'message': message}
     raise Http404
 
-
+@login_required
 @ajax_request
 def change_user_password(request):
     if request.method == 'POST':

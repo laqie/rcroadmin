@@ -107,7 +107,7 @@ def create_or_change_user(username,
         user.cn = username
         user.given_name = ' '.join(full_name.split(' ')[1:])
         user.display_name = ' '.join(
-            (full_name.split(' ')[0], '%s.' % full_name.split(' ')[1][0], '%s.' % full_name.split(' ')[2][0]))
+            (full_name.split(' ')[0], '%s.' % full_name.split(' ')[1][0], '%s.' % full_name.split(' ')[2][0])) if len(full_name.split()) == 3 else full_name
         user.last_name = full_name.split(' ')[0]
         user.uid_number = int(domain_next_uid)
         user.gid_number = 513
