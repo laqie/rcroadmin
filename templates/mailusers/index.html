@@ -54,6 +54,7 @@
             $('a.show-password').click(function (event) {
                 event.preventDefault();
                 if ($(this).html() === showText) {
+                    var password_link = this;
                     var username = $(this).parents('tr').find('td.login a').html();
                     var password_field = $(this).nextAll('.password');
                     ajax_request(
@@ -64,7 +65,7 @@
                             '{{ csrf_token }}',
                             function (data) {
                                 password_field.html('<code>' + data.password + '</code>');
-                                $(this).html(hideText);
+                                $(password_link).html(hideText);
                             }
                     );
                 } else {

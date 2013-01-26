@@ -61,7 +61,7 @@ class SambaUserForm(forms.Form):
                 *fields
             ),
             FormActions(
-                Submit('submit', 'Сохранить', css_class='btn-primary'),
+                Submit('submit', u'Сохранить', css_class='btn-primary'),
                 HTML(u'<a href="{% url sambausers_index %}" class="btn">Отмена</a>'),
             )
 
@@ -92,7 +92,7 @@ class SambaGroupForm(forms.ModelForm):
                 *fields
             ),
             FormActions(
-                Submit('submit', 'Сохранить', css_class='btn-primary'),
+                Submit('submit', u'Сохранить', css_class='btn-primary'),
                 HTML(u'<a href="{% url sambausers_index %}" class="btn">Отмена</a>'),
             )
 
