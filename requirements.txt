@@ -1,6 +1,6 @@
-smbpasswd
-python-ldap==2.3.13
-django
-django-annoying
+Django==1.4
+django-annoying==0.7.7
+django-crispy-forms==1.2.3
 git+https://laqie@github.com/laqie/django-ldapdb.git
-django-crispy-forms
+python-ldap==2.3.13
+smbpasswd==1.0.2
